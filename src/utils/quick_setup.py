@@ -2,7 +2,7 @@ def load_library(NAME_LIB, FILE_PATH, local=False):
     from importlib.machinery import SourceFileLoader
 
     if local==False:
-        FILE_PATH = '/content/dissertacao/' + FILE_PATH
+        FILE_PATH = '/content/nr_earth/' + FILE_PATH
 
     else:
         FILE_PATH = '../../' + FILE_PATH
