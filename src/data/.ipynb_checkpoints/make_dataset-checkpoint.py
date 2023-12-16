@@ -3,28 +3,21 @@
 
 import pandas as pd
 import numpy as np
-from joblib import dump, load
-import pyarrow.feather as feather
-import glob
 
-def get_data(nrows=None, low_memory=False, dataset="training", feather=True): 
-
+def get_data(nrows=None, low_memory=False, dataset="training", feather=False):
 
 
     #DOWNLOAD DATAFRAME
     if feather==True:
-    	df = pd.read_feather('../../Data/Interim/'+dataset+'_val3.feather').iloc[:nrows,:]
+    	df = pd.read_feather('../../Data/Interim/'+dataset+'_compressed.feather').iloc[:nrows,:]
 
-    elif dataset == "legacy":
-        data_path = '/content/legacy_compressed.feather' #colab
-        df = pd.read_feather(data_path).iloc[:nrows,:]
-
+    elif dataset=="validation":
+        data_path = '../../Data/Interim/'+dataset+'_data.csv'
+        df = pd.read_csv(data_path, nrows=nrows)
 
     else:
-    	data_path = 'https://numerai-public-datasets.s3-us-west-2.amazonaws.com/latest_numerai_'+dataset+'_data.csv'
+    	data_path = 'https://numerai-public-datasets.s3-us-west-2.amazonaws.com/latest_numerai_'+dataset+'_data.csv.xz'
     	df = pd.read_csv(data_path, nrows=nrows)
-
-
 
 
 
@@ -36,18 +29,14 @@ def get_data(nrows=None, low_memory=False, dataset="training", feather=True):
     
     #COLUMN NAMES
     X = [c for c in df if c.startswith("feature")]
-    y = "target"
+    y = "target_kazutsugi"
 
-    if dataset == "tournament": df.replace(to_replace='eraX', value='era9999', inplace=True)
-    if (dataset != "legacy") and (dataset != "validation") and (feather==True): df['era'] = df.loc[:, 'era'].str[3:].astype('int32')
-    if (dataset == "validation") and (feather==False): df['era'] = df.loc[:, 'era'].str[3:].astype('int32')
-    if (dataset == "training") and (feather==False): df['era'] = df.loc[:, 'era'].str[3:].astype('int32')
-    if dataset=='legacy': df['era'] = df['era'].astype('int32')
-
+    df['era'] = df.loc[:, 'era'].str[3:].astype('int32')
 
     #PRINT MEMORY USAGE
     print(df.info())
     return df, X, y
+
 
 
 
@@ -92,35 +81,11 @@ def reduce_mem_usage(df, verbose=True):
 ########################################################################################
 ########################################################################################
 
+import pandas as pd
+import numpy as np
+from joblib import dump, load
+import pyarrow.feather as feather
 
-
-
-
-def get_preditions(df, models, preds_type='legacy'):
-  root_path = '/content/dissertacao/reports/predicoes_'+preds_type+'/'
-  files_list = glob.glob(root_path+'**/*.csv', recursive = True)
-
-  if preds_type=='legacy':
-    ext = '_predictions.csv'
-
-
-  if preds_type=='validacao':
-    ext = '_preds_test.csv'
-
-  if preds_type=='train':
-    ext = '_preds_train.csv'
-
-  for model in models:
-    print(model)
-    model_ = '/'+ model + ext
-    csv_path = [s for s in files_list if model_ in s]
-    print(csv_path)
-    if len(csv_path) > 1: print('path: ', csv_path)
-    if len(csv_path) < 1: print('model: ', model_)
-
-    df[model] = pd.read_csv(csv_path[0], index_col='id').values.reshape(1,-1)[0]
-
-  return df
 
 def create_dtype():
 	#download Numerai training data and load as a pandas dataframe
@@ -132,7 +97,7 @@ def create_dtype():
 
 	#create a list of the column names
 	col_list = ["id", "era", "data_type"]
-	col_list = col_list + features + ["target"]
+	col_list = col_list + features + ["target_kazutsugi"]
 
 	#create a list of corresponding data types to match the column name list
 	dtype_list_back = [np.float32] * 311
@@ -180,68 +145,6 @@ def create_feather_df(dataset="training"):
 
 	return df
 
-
-
-
-###################
-
-
-import numerapi
-def get_massive_data_int8(dataset, download=True):
-
-  file_path = "numerai_"+dataset+"_data_int8.parquet"
-
-  if download==True:
-    napi = numerapi.NumerAPI(verbosity="info")
-    napi.download_dataset(file_path, "datasets/"+file_path)
-
-  data = pd.read_parquet("datasets/"+file_path)
-  return data
-
-def get_massive_data_tv4(slice_data, download):
-
-  
-  training_data = get_massive_data_int8("training", download)
-  validation_data = get_massive_data_int8("validation", download)
-
-  mass_data_train_dict = dict()
-  mass_data_val_dict = dict()
-  mass_data = pd.concat([training_data,validation_data])
-
-  for i in slice_data:
-    mass_data_train_dict['train_'+str(i)] = mass_data[mass_data.era.isin(mass_data.era.unique()[i-1::8])]
-    mass_data_val_dict['val_'+str(i)] = mass_data[mass_data.era.isin(mass_data.era.unique()[i-1+4::8])]
-
-
-
-  X = [c for c in mass_data if c.startswith("feature")]
-  yList = [c for c in mass_data if c.startswith("target")]
-  y="target"
-
-  return mass_data_train_dict, mass_data_val_dict, X, yList, y
-
-
-
-def massive_data_csv_float16(**hparams):
-  features = [c for c in validation_data if c.startswith("feature")]
-  col_list = ["id", "era", "data_type"]
-  col_list = col_list + features + ["target", "target_nomi_20", "target_nomi_60", "target_jerome_20", "target_jerome_60",
-  "target_janet_20", "target_janet_60", "target_ben_20", "target_ben_60", "target_alan_20",
-  "target_alan_60", "target_paul_20", "target_paul_60", "target_george_20", "target_george_60","target_william_20", 
-  "target_william_60", "target_arthur_20", "target_arthur_60", "target_thomas_20", "target_thomas_60"]
-
-
-  dtype_list_back = [np.float16] * 1071
-  dtype_list_front = [str, np.float16, str]
-  dtype_list = dtype_list_front + dtype_list_back
-  dtype_zip = zip(col_list, dtype_list)
-  dtype_dict = dict(dtype_zip)
-
-  dump(dtype_dict, 'dtype_dict1_new.joblib')
-
-  dtype_dict = load('dtype_dict1_new.joblib')
-  df = pd.read_csv('numerai_training_data.csv', dtype=dtype_dict, nrows=None)
-  return df
 
 
 

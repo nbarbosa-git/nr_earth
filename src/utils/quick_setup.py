@@ -21,19 +21,40 @@ def get_libs(local=False):
 
     
     #folder src.data
-    #load_library('make_dataset', 'src/data/make_dataset.py', local=local)
+    load_library('make_dataset', 'src/data/make_dataset.py', local=local)
 
 
     #folder src.models
-    #load_library('train_model', 'src/models/train_model.py', local=local)
+    load_library('train_model', 'src/models/train_model.py', local=local)
+    load_library('evaluation', 'src/models/evaluation.py', local=local)
+    load_library('meta_model', 'src/models/meta_model.py', local=local)
+    load_library('fs_dynamic_synthetic', 'src/models/fs_dynamic_synthetic.py', local=local)
+    load_library('neutralize', 'src/models/neutralize.py', local=local)
+    load_library('get_model',  'src/models/get_model.py', local=local)
+    load_library('xgb_ranker_class', 'src/models/xgb_ranker_class.py', local=local)
+    load_library('pipelines', 'src/models/pipelines.py', local=local)
+    load_library('clusters_selection', 'src/models/clusters_selection.py', local=local)
+    load_library('portfolio_opt', 'src/models/portfolio_opt.py', local=local) 
     
 
     #folder src.visualization
-    #load_library('visualize', 'src/visualization/visualize.py', local=local)
+    load_library('visualize', 'src/visualization/visualize.py', local=local)
+
 
 
     #folder src.validation (MANTER A ORDEM)
-    #load_library('group_ts_split', 'src/validation/group_ts_split.py', local=local)
+    load_library('group_ts_split', 'src/validation/group_ts_split.py', local=local)
+    load_library('combinatorial_split', 'src/validation/combinatorial_split.py', local=local)
+    load_library('metrics_era', 'src/validation/metrics_era.py', local=local)
+    load_library('metrics_description', 'src/validation/metrics_description.py', local=local)
+    load_library('dsr', 'src/validation/dsr.py', local=local)
+    load_library('metrics', 'src/validation/metrics.py', local=local)
+    load_library('metrics_live', 'src/validation/metrics_live.py', local=local)
+    load_library('stat', 'src/validation/stat.py', local=local)
+    load_library('reports_json', 'src/validation/reports_json.py', local=local)
+
+
+
 
 
 
@@ -51,6 +72,7 @@ def get_libs(local=False):
     load_library('importance', 'src/collection/mlfinlab/feature_importance/importance.py', local=local)
     load_library('fingerpint', 'src/collection/mlfinlab/feature_importance/fingerpint.py', local=local)
     load_library('orthogonal', 'src/collection/mlfinlab/feature_importance/orthogonal.py', local=local)
+
 
 
 
