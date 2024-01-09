@@ -6,6 +6,7 @@ import scipy.stats as sp
 from abc import abstractmethod
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.base import BaseEstimator, TransformerMixin
+from tqdm import tqdm
 
 #from .feature_groups import V4_2_FEATURE_GROUP_MAPPING
 
@@ -1054,7 +1055,7 @@ class BaseEvaluator:
         # Compute per era correlation for each prediction column.
         if payout=='CORR':
           validation_by_eras = pd.DataFrame()
-          for pred_col in pred_cols:
+          for pred_col in tqdm(pred_cols):
               per_era_corrs = self.per_era_numerai_corrs(
                   dataf, pred_col=pred_col, target_col=target_col
               )
@@ -1063,7 +1064,7 @@ class BaseEvaluator:
         if payout=='MMC':
           validation_by_eras = pd.DataFrame()
           # Compute per era correlation for each prediction column.
-          for pred_col in pred_cols:
+          for pred_col in tqdm(pred_cols):
               per_era_corrs = self.contributive_correlation(
                   dataf, pred_col=pred_col, target_col=target_col,
                   other_col=meta_col
@@ -1073,7 +1074,7 @@ class BaseEvaluator:
 
         if payout=='CORRMMC':
           corr_validation_by_eras = pd.DataFrame()
-          for pred_col in pred_cols:
+          for pred_col in tqdm(pred_cols):
               per_era_corrs = self.per_era_numerai_corrs(
                   dataf, pred_col=pred_col, target_col=target_col
               )
@@ -1081,7 +1082,7 @@ class BaseEvaluator:
 
           mmc_validation_by_eras = pd.DataFrame()
           # Compute per era correlation for each prediction column.
-          for pred_col in pred_cols:
+          for pred_col in tqdm(pred_cols):
               per_era_corrs = self.contributive_correlation(
                   dataf, pred_col=pred_col, target_col=target_col,
                   other_col=meta_col
