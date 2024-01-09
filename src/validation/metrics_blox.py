@@ -186,6 +186,7 @@ from joblib import Parallel, delayed
 #from .misc import Key
 #from .feature_groups import FNCV3_FEATURES
 from list_features import FNCV3_FEATURES
+from metrics_tools import correlation_contribution
 
 FAST_METRICS = ["mean_std_sharpe", "apy", "max_drawdown", "calmar_ratio"]
 ALL_NO_BENCH_METRICS = FAST_METRICS + ["autocorrelation", "max_feature_exposure", "smart_sharpe", "legacy_mean_std_sharpe", "fn_mean_std_sharpe", "tb200_mean_std_sharpe", "tb500_mean_std_sharpe"]
