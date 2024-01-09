@@ -52,8 +52,8 @@ def get_libs(local=False):
     load_library('metrics_live', 'src/validation/metrics_live.py', local=local)
     load_library('stat', 'src/validation/stat.py', local=local)
     load_library('reports_json', 'src/validation/reports_json.py', local=local)
-    
-    load_library('features', 'src/validation/features.py', local=local)
+
+    load_library('list_features', 'src/validation/list_features.py', local=local)
     load_library('json_keys', 'src/validation/json_keys.py', local=local)
     load_library('metrics_tools', 'src/validation/metrics_tools.py', local=local)
     load_library('metrics_blox', 'src/validation/metrics_blox.py', local=local)
